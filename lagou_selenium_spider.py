@@ -5,6 +5,13 @@
 @time: 2018-11-07 16:32:13
 """
 
+
+# 目的：爬取拉钩网python职位信息
+# 思路：首先获取搜索python后的页面信息，通过该页面获取到第一页所有带
+# 爬取具体职位信息的url链接，然后逐一爬取。然后依次爬取第2 3~N页信息
+# 通过selenium模拟浏览器爬取，注意不要爬取太快
+# 使用lxml解析网页源代码
+
 from selenium import webdriver
 from lxml import etree
 import re
@@ -24,6 +31,7 @@ class LagouSpider(object):
 		self.driver.get(self.url)
 		while True:
 			source = self.driver.page_source
+			# 放置爬取过快，页面未渲染好
 			WebDriverWait(driver=self.driver, timeout=10).until(
 				EC.presence_of_element_located((By.XPATH, "//div[@class='pager_container']/span[@class='pager_next ']"))
 			)
@@ -46,7 +54,11 @@ class LagouSpider(object):
 		# self.driver.get(url)
 		self.driver.execute_script("window.open('%s')" % url)
 		self.driver.switch_to.window(self.driver.window_handles[1])
+
+		# 放置爬取过快，页面未渲染好
 		WebDriverWait(self.driver, timeout=10).until(
+
+			# 下面的xpath不能包含text()
 			EC.presence_of_element_located((By.XPATH, "//span[@class='name']"))
 		)
 		source = self.driver.page_source
